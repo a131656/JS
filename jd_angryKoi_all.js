@@ -600,11 +600,11 @@ function rabbitLogs(){
         $.get(url, async(err, resp, data) => {
             try {
                 data = JSON.parse(data);
-                if (data && data.data.status == 0) {
+                if (data && data.status == 0) {
                     lnrequesttimes = data.request_times;
                     logs = {
-                        random: data.data.random,
-                        log: data.data.log
+                        random: data.random,
+                        log: data.log
                     }
                     console.info(logs['random']+"----"+logs['log'])
                     if (logs != '')
