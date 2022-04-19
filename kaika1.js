@@ -102,27 +102,15 @@ let activityCookie =''
     return;
   }
   $.activityId = "dzlhkkc99b60200kk081f1bc4bacd1"
-  let authorCodeList = [
-      '8bc5f27ff47b4618bc19eb56c14f218b',
-      'c77d9855bc3545e6b51226fc986545f1',
-      '0ae68b0fbfe8493f98e2f99f4de0027c',
-	  '357474bacf2a4062b8d33720ba9532c5',
-	  '087e8ed184bc475db53b6d3f16dbc0ee',
-	  '08460e1a1a7446ca933619fba9080af4',
-	  'f0f4c26a4f234a74b141f2b88ad1c1f9',
-	  '652317e368744ea390f3339e64330d66',
-	  '21d5a012385841e7b9038fe15fef7bf7',
-	  'd97a5ceccbae49568bbf1dfd779484b5',
-	  'a9032499e8e64db0bb03f6ce0260676a',
-	  '462a10ba68f34545be91376eb16e7d5c',
-	  '60c68658f8d34fa5a127579d50c17a3c',
-	  'c58215e25b7b46a89e90ee88d2474427',
-	  'e841a53d3f28450788b85175828ac452'
-  ]
-			
-  $.shareUuid = authorCodeList[random(0, authorCodeList.length)]  
+  $.shareUuid = "9711698bd2364f9988cab43d2be52f91"
   console.log(`入口:\nhttps://lzdz1-isv.isvjcloud.com/dingzhi/customized/common/activity?activityId=${$.activityId}&shareUuid=${$.shareUuid}`)
-  
+  let shareUuidArr = [$.shareUuid,]
+  let s = Math.floor((Math.random()*10))
+  let n = 0
+  if(s >= 1 && s<= 6) n = Math.floor((Math.random()*shareUuidArr.length))
+  $.shareUuid = shareUuidArr[n] ? shareUuidArr[n] : $.shareUuid
+
+
   for (let i = 0; i < cookiesArr.length; i++) {
     cookie = cookiesArr[i];
     if (cookie) {
@@ -272,7 +260,7 @@ async function run() {
       await takePostRequest('activityContent');
     }
     console.log(`${$.score}值`)
-    /* if(guaopencard_draw+"" !== "0"){
+    if(guaopencard_draw+"" !== "0"){
       $.runFalag = true
       let count = parseInt($.score/100)
       guaopencard_draw = parseInt(guaopencard_draw, 10)
@@ -289,9 +277,9 @@ async function run() {
         }
         await $.wait(parseInt(Math.random() * 2000 + 2000, 10))
       }
-    }else console.log('如需抽奖请设置环境变量[guaopencard_draw134]为"3" 3为次数'); */
+    }else console.log('如需抽奖请设置环境变量[guaopencard_draw134]为"3" 3为次数');
     
-    await $.wait(1000)
+    await $.wait(parseInt(Math.random() * 1000 + 2000, 10))
     await takePostRequest('getDrawRecordHasCoupon');
     await takePostRequest('getShareRecord');
     if($.outFlag){
@@ -304,8 +292,17 @@ async function run() {
       $.shareUuid = $.actorUuid
       console.log(`后面的号都会助力:${$.shareUuid}`)
     }
-    await $.wait(2000)
-    
+    await $.wait(parseInt(Math.random() * 1000 + 5000, 10))
+    if(flag) await $.wait(parseInt(Math.random() * 1000 + 10000, 10))
+    if(guaopenwait){
+      if($.index != cookiesArr.length){
+        console.log(`等待${guaopenwait}秒`)
+        await $.wait(parseInt(guaopenwait, 10) * 1000)
+      }
+    }else{
+      if($.index % 3 == 0) console.log('休息1分钟，别被黑ip了\n可持续发展')
+      if($.index % 3 == 0) await $.wait(parseInt(Math.random() * 5000 + 60000, 10))
+    }
   } catch (e) {
     console.log(e)
   }
@@ -827,8 +824,12 @@ async function joinShop() {
     let activityId = ``
     if ($.shopactivityId) activityId = `,"activityId":${$.shopactivityId}`
     let body = `{"venderId":"${$.joinVenderId}","shopId":"${$.joinVenderId}","bindByVerifyCodeFlag":1,"registerExtend":{},"writeChildFlag":0${activityId},"channel":406}`
-    let h5st = '20220412164634306%3Bf5299392a200d6d9ffced997e5790dcc%3B169f1%3Btk02wc0f91c8a18nvWVMGrQO1iFlpQre2Sh2mGtNro1l0UpZqGLRbHiyqfaUQaPy64WT7uz7E%2FgujGAB50kyO7hwByWK%3B77c8a05e6a66faeed00e4e280ad8c40fab60723b5b561230380eb407e19354f7%3B3.0%3B1649753194306'
-    
+    let h5st = 'undefined'
+    try {
+      h5st = await h5stSign(body, "bindWithVender") || 'undefined'
+    } catch (e) {
+      h5st = 'undefined'
+    }
     const options = {
       url: `https://api.m.jd.com/client.action?appid=jd_shop_member&functionId=bindWithVender&body=${body}&clientVersion=9.2.0&client=H5&uuid=88888&h5st=${h5st}`,
       headers: {
@@ -871,16 +872,15 @@ async function joinShop() {
     })
   })
 }
-function random(min, max) {
-
-    return Math.floor(Math.random() * (max - min)) + min;
-
-}
 async function getshopactivityId() {
   return new Promise(async resolve => {
     let body = `{"venderId":"${$.joinVenderId}","channel":406,"payUpShop":true}`
-	let h5st = '20220412164634306%3Bf5299392a200d6d9ffced997e5790dcc%3B169f1%3Btk02wc0f91c8a18nvWVMGrQO1iFlpQre2Sh2mGtNro1l0UpZqGLRbHiyqfaUQaPy64WT7uz7E%2FgujGAB50kyO7hwByWK%3B77c8a05e6a66faeed00e4e280ad8c40fab60723b5b561230380eb407e19354f7%3B3.0%3B1649753194306'
-
+    let h5st = 'undefined'
+    try {
+      h5st = await h5stSign(body, "getShopOpenCardInfo") || 'undefined'
+    } catch (e) {
+      h5st = 'undefined'
+    }
     const options = {
       url: `https://api.m.jd.com/client.action?appid=jd_shop_member&functionId=getShopOpenCardInfo&body=${body}&clientVersion=9.2.0&client=H5&uuid=88888&h5st=${h5st}`,
       headers: {
